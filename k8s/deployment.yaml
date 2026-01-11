@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forecast-service
+  namespace: ml-forecast
+  labels:
+    app: forecast-service
+    version: v1
+spec:
+  replicas: 3  # 3 pods pour haute disponibilité
+  selector:
+    matchLabels:
+      app: forecast-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0  # Zero downtime
+  template:
+    metadata:
+      labels:
+        app: forecast-service
+        version: v1
+    spec:
+      containers:
+      - name: forecast-api
+        image: luxuryhouse.azurecr.io/luxuryhouse/forecast-service:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        
+        # Variables d'environnement depuis ConfigMap
+        envFrom:
+        - configMapRef:
+            name: forecast-config
+        - secretRef:
+            name: forecast-secrets
+        
+        # Ressources CPU/Mémoire
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "2000m"
+            memory: "4Gi"
+        
+        # Probes pour Kubernetes
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        
+        # Graceful shutdown
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 15"]
+      
+      # Image pull secret pour Azure Container Registry
+      imagePullSecrets:
+      - name: acr-secret

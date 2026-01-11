@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  mlflow-server:
+    image: ghcr.io/mlflow/mlflow:latest
+    container_name: mlflow-tracking-server
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlruns:/mlflow/mlruns
+      - ./mlartifacts:/mlflow/mlartifacts
+    environment:
+      - BACKEND_STORE_URI=postgresql://mlflow_user:mlflow_password@postgres:5432/mlflow
+      - DEFAULT_ARTIFACT_ROOT=/mlflow/mlartifacts
+    command: >
+      mlflow server
+      --backend-store-uri postgresql://mlflow_user:mlflow_password@postgres:5432/mlflow
+      --default-artifact-root /mlflow/mlartifacts
+      --host 0.0.0.0
+      --port 5000
+    depends_on:
+      - postgres
+    networks:
+      - mlflow-network
+
+  postgres:
+    image: postgres:14
+    container_name: mlflow-postgres
+    environment:
+      POSTGRES_DB: mlflow
+      POSTGRES_USER: mlflow_user
+      POSTGRES_PASSWORD: mlflow_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mlflow-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mlflow_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  mlflow-network:
+    driver: bridge

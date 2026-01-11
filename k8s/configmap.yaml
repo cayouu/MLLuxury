@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: forecast-config
+  namespace: ml-forecast
+data:
+  MLFLOW_TRACKING_URI: "http://mlflow-server.ml-forecast.svc.cluster.local:5000"
+  MODEL_NAME: "luxury_demand_forecast"
+  MODEL_STAGE: "Production"
+  LOG_LEVEL: "INFO"

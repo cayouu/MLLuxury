@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: forecast-service
+  namespace: ml-forecast
+  labels:
+    app: forecast-service
+spec:
+  type: ClusterIP  # Interne au cluster
+  selector:
+    app: forecast-service
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  sessionAffinity: ClientIP  # Sticky sessions

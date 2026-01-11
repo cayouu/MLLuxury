@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ml-forecast
+  labels:
+    name: ml-forecast
+    environment: production
