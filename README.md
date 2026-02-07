@@ -17,11 +17,12 @@ Exemple concret d'intégration et d'utilisation de modèles d'IA dans le secteur
   - Pipeline d'entraînement et hyperparameter tuning
   - Intégration MLflow (optionnel)
 
-### Frontend Vue.js
-- **frontend** : Interface utilisateur Vue 3
-  - Dashboard avec métriques et alertes
-  - Visualisation des prévisions avec graphiques
-  - Planification de production interactive
+### Frontend Angular
+- **frontend** : Interface utilisateur Angular 18
+  - Page d’accueil avec navigation vers les API .NET et Python
+  - Page dédiée aux appels API .NET (plan de production, prévisions)
+  - Page dédiée aux appels API Python (prévisions, health, métriques modèle)
+  - Services séparés par backend (`ApiDotnetService`, `ApiPythonService`)
 
 ## Technologies Utilisées
 
@@ -37,6 +38,12 @@ Exemple concret d'intégration et d'utilisation de modèles d'IA dans le secteur
 - scikit-learn
 - Pandas / NumPy
 - MLflow (optionnel)
+
+### Frontend Angular
+- Angular 18 (standalone components)
+- TypeScript
+- Angular Router, HttpClient
+- RxJS
 
 ## Démarrage Rapide
 
@@ -73,17 +80,17 @@ dotnet restore
 dotnet run
 ```
 
-L'API sera accessible sur `https://localhost:5001` (ou port configuré)
+L'API sera accessible sur `http://localhost:5000` (voir `Properties/launchSettings.json`)
 
-#### 4. Frontend Vue.js
+#### 4. Frontend Angular
 
 ```bash
 cd frontend
 npm install
-npm run dev
+npm start
 ```
 
-L'interface sera accessible sur `http://localhost:3000`
+L'interface sera accessible sur `http://localhost:4200`. Le proxy redirige `/api` vers l’API .NET (port 5000) et `/python-api` vers le service Python (port 8000).
 
 ### Production
 
@@ -195,6 +202,13 @@ Content-Type: application/json
 │   │   └── utils/
 │   ├── training/
 │   └── data/
+├── frontend/                     # Frontend Angular 18
+│   ├── src/app/
+│   │   ├── pages/               # home, api-dotnet, api-python
+│   │   ├── services/            # api-dotnet.service, api-python.service
+│   │   └── utils/               # http-error.util
+│   ├── proxy.conf.json          # Proxy /api → 5000, /python-api → 8000
+│   └── angular.json
 └── README.md
 ```
 
