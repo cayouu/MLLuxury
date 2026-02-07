@@ -1,0 +1,92 @@
+<div class="home">
+  <header class="header">
+    <h1>Luxury Forecast – Appel APIs</h1>
+    <p class="subtitle">Choisissez l’API (.NET ou Python) et l’action à exécuter</p>
+  </header>
+
+  <div class="card control-card">
+    <h2 class="card-title">Menu</h2>
+
+    <div class="row">
+      <label>API cible :</label>
+      <select [(ngModel)]="selectedApi" class="select">
+        <option value="dotnet">API .NET (port 5000)</option>
+        <option value="python">API Python (port 8000)</option>
+      </select>
+    </div>
+
+    @if (selectedApi === 'dotnet') {
+      <div class="row">
+        <label>Action .NET :</label>
+        <select [(ngModel)]="dotnetAction" class="select">
+          <option value="production-plan">Plan de production (recommandations)</option>
+          <option value="forecast">Prévisions (liste produits)</option>
+        </select>
+      </div>
+      @if (dotnetAction === 'production-plan') {
+        <div class="row">
+          <label>Collection :</label>
+          <select [(ngModel)]="collectionId" class="select">
+            <option value="Spring2024">Spring 2024</option>
+            <option value="Fall2024">Fall 2024</option>
+          </select>
+        </div>
+      }
+      @if (dotnetAction === 'forecast') {
+        <div class="row">
+          <label>IDs produits (séparés par des virgules) :</label>
+          <input type="text" [(ngModel)]="productIds" class="select" placeholder="BAG-001, BAG-002" />
+        </div>
+      }
+      <div class="row">
+        <label>Horizon (semaines) :</label>
+        <input type="number" [(ngModel)]="horizonWeeks" min="1" max="52" class="select" style="min-width: 80px;" />
+      </div>
+    }
+
+    @if (selectedApi === 'python') {
+      <div class="row">
+        <label>Action Python :</label>
+        <select [(ngModel)]="pythonAction" class="select">
+          <option value="forecast">Prévisions (POST /forecast)</option>
+          <option value="health">Health (GET /health)</option>
+          <option value="model-metrics">Métriques modèle (GET /model/metrics)</option>
+        </select>
+      </div>
+      @if (pythonAction === 'forecast') {
+        <div class="row">
+          <label>IDs produits :</label>
+          <input type="text" [(ngModel)]="productIds" class="select" placeholder="BAG-001, BAG-002" />
+        </div>
+        <div class="row">
+          <label>Horizon (semaines) :</label>
+          <input type="number" [(ngModel)]="horizonWeeks" min="1" max="52" class="select" style="min-width: 80px;" />
+        </div>
+      }
+    }
+
+    <div class="row actions">
+      <button type="button" class="btn btn-primary" (click)="callApi()" [disabled]="loading">
+        {{ loading ? 'Appel en cours…' : 'Appeler l’API' }}
+      </button>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="card"><p class="loading">Chargement…</p></div>
+  }
+
+  @if (error) {
+    <div class="card">
+      <h3 class="result-title">Erreur</h3>
+      <p class="error-msg">{{ error }}</p>
+    </div>
+  }
+
+  @if (result && !error) {
+    <div class="card">
+      <h3 class="result-title">Résultat</h3>
+      <pre class="result-pre">{{ result }}</pre>
+    </div>
+  }
+</div>
