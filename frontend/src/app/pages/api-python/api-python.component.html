@@ -1,0 +1,48 @@
+<div class="api-page">
+  <header class="header">
+    <h1>API Python</h1>
+    <p class="subtitle">Appels vers le service FastAPI (port 8000)</p>
+    <a routerLink="/" class="btn btn-back">← Retour à l’accueil</a>
+  </header>
+
+  <div class="card control-card">
+    <h2 class="card-title">Actions</h2>
+
+    <div class="row">
+      <label>IDs produits (virgules) :</label>
+      <input type="text" [(ngModel)]="productIds" class="select" placeholder="BAG-001, BAG-002" />
+    </div>
+    <div class="row">
+      <label>Horizon (semaines) :</label>
+      <input type="number" [(ngModel)]="horizonWeeks" min="1" max="52" class="select" style="min-width: 80px;" />
+    </div>
+
+    <div class="action-buttons">
+      <button type="button" class="btn btn-primary" (click)="callForecast()" [disabled]="loading">
+        Prévisions (POST /forecast)
+      </button>
+      <button type="button" class="btn btn-primary" (click)="callHealth()" [disabled]="loading">
+        Health (GET /health)
+      </button>
+      <button type="button" class="btn btn-primary" (click)="callModelMetrics()" [disabled]="loading">
+        Métriques modèle (GET /model/metrics)
+      </button>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="card"><p class="loading">Chargement…</p></div>
+  }
+  @if (error) {
+    <div class="card">
+      <h3 class="result-title">Erreur</h3>
+      <p class="error-msg">{{ error }}</p>
+    </div>
+  }
+  @if (result && !error) {
+    <div class="card">
+      <h3 class="result-title">Résultat</h3>
+      <pre class="result-pre">{{ result }}</pre>
+    </div>
+  }
+</div>
